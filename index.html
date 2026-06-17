@@ -377,8 +377,9 @@
     display: block;
     width: 100%; height: 100%;
     object-fit: cover;
-    transform: scaleX(-1);
   }
+  /* 전면 카메라일 때만 좌우 반전(셀카 뷰). 후면 카메라는 그대로 표시 */
+  .video-wrap.mirror video, .video-wrap.mirror canvas { transform: scaleX(-1); }
   .video-wrap canvas { position: absolute; top: 0; left: 0; }
   .video-overlay {
     position: absolute;
@@ -408,6 +409,15 @@
   .btn-cam:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
   .btn-cam:active { transform: translate(2px, 2px); box-shadow: var(--shadow-sm); }
   .btn-cam[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .cam-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .cam-controls .btn-cam { margin-top: 0; }
+  .btn-cam-switch { background: var(--bg); font-size: 18px; padding: 14px 20px; }
 
   .result-card {
     background: var(--bg);
@@ -584,7 +594,10 @@
               카메라를 켜고<br>그린 보안카드를<br>화면에 비춰보세요
             </div>
           </div>
-          <button class="btn-cam" id="btnCam">📷 카메라 시작</button>
+          <div class="cam-controls">
+            <button class="btn-cam" id="btnCam">📷 카메라 시작</button>
+            <button class="btn-cam btn-cam-switch" id="btnSwitch" hidden>🔄 전/후면 전환</button>
+          </div>
         </div>
         <div>
           <div class="result-card">
@@ -1968,7 +1981,20 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
   const overlay = document.getElementById('overlay');
   const overlayCtx = overlay.getContext('2d');
   const videoOverlayEl = document.getElementById('videoOverlay');
+  const videoWrapEl = video.closest('.video-wrap');
   const btnCam = document.getElementById('btnCam');
+  const btnSwitch = document.getElementById('btnSwitch');
+
+  // 모바일/태블릿이면 후면(environment), 노트북/데스크톱이면 전면(user)을 기본값으로
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)); // iPadOS 13+ 대응
+  let facingMode = isMobile ? 'environment' : 'user';
+
+  // 전면 카메라는 셀카처럼 좌우 반전, 후면 카메라는 실제 방향 그대로
+  function applyMirror() {
+    videoWrapEl.classList.toggle('mirror', facingMode === 'user');
+  }
+  applyMirror();
   const resultIdEl = document.getElementById('resultId');
   const resultStatusEl = document.getElementById('resultStatus');
   const statFpsEl = document.getElementById('statFps');
@@ -2000,7 +2026,7 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
       // Try with preferred constraints first, fallback to simpler if device not matched
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: 'user' } },
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: facingMode } },
           audio: false
         });
       } catch (e1) {
@@ -2011,6 +2037,7 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
           throw e1;
         }
       }
+      applyMirror();
       video.srcObject = stream;
       // wait for metadata so videoWidth/Height are populated
       await new Promise((resolve) => {
@@ -2031,6 +2058,14 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
 
       btnCam.textContent = '⏹ 카메라 끄기';
       btnCam.disabled = false;
+      // 카메라가 2개 이상일 때만 전/후면 전환 버튼 노출
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cams = devices.filter(d => d.kind === 'videoinput');
+        btnSwitch.hidden = cams.length < 2 && !isMobile;
+      } catch (_) {
+        btnSwitch.hidden = !isMobile;
+      }
       resultStatusEl.textContent = '카드를 카메라에 비춰주세요';
       lastFrameTime = performance.now();
       tick();
@@ -2079,6 +2114,7 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
       stream = null;
     }
     video.srcObject = null;
+    btnSwitch.hidden = true;
     videoOverlayEl.classList.remove('hidden');
     videoOverlayEl.innerHTML = '카메라를 켜고<br>그린 보안카드를<br>화면에 비춰보세요';
     overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
@@ -2187,6 +2223,16 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
   btnCam.addEventListener('click', () => {
     if (stream) stopDetection();
     else startDetection();
+  });
+
+  // 전/후면 카메라 전환: facingMode를 뒤집고 스트림을 다시 시작
+  btnSwitch.addEventListener('click', async () => {
+    facingMode = (facingMode === 'user') ? 'environment' : 'user';
+    applyMirror();
+    if (stream) {
+      stopDetection();
+      await startDetection();
+    }
   });
 
   // stop camera when page hidden
