@@ -222,6 +222,7 @@
   }
   .id-input {
     flex: 1;
+    min-width: 0;
     border: var(--line-w) solid var(--line);
     padding: 14px 16px;
     font-family: var(--pixel);
@@ -229,7 +230,6 @@
     text-align: center;
     background: var(--bg);
     color: var(--ink);
-    width: 100%;
     outline: none;
     transition: background 0.12s;
   }
@@ -515,6 +515,9 @@
     .card { padding: 18px; }
     .make-grid, .detect-grid { gap: 20px; }
     .step-head h3 { font-size: 19px; }
+    .id-input-row { flex-direction: column; }
+    .id-input { font-size: 28px; }
+    .btn-make { padding: 13px 22px; }
     .result-card { padding: 18px; }
     .result-id { font-size: 72px; padding: 16px 8px; }
     .cam-controls { gap: 8px; margin-top: 16px; }
