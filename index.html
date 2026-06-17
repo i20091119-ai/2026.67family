@@ -49,6 +49,7 @@
     -webkit-font-smoothing: antialiased;
     line-height: 1.5;
     padding: 24px 24px 80px;
+    overflow-x: hidden; /* 폰에서 가로 삐져나감 방지 안전장치 */
   }
 
   .container { max-width: 1280px; margin: 0 auto; }
@@ -187,6 +188,8 @@
     gap: 32px;
     align-items: start;
   }
+  /* 그리드 자식이 자기 콘텐츠 최소너비로 트랙을 화면 밖까지 넓히지 못하게 막음 */
+  .make-grid > *, .detect-grid > * { min-width: 0; }
   @media (max-width: 900px) {
     .make-grid { grid-template-columns: 1fr; }
     .titles h1 { font-size: 22px; }
