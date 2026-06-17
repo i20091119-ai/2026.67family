@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>2026 가족과 함께하는 SW체험교실 — 마커로 움직이는 이족보행로봇</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Crect width='7' height='7' fill='%23ffd84d'/%3E%3Cpath fill='%23141110' d='M0 0h7v1H0zM0 6h7v1H0zM0 0h1v7H0zM6 0h1v7H6zM2 2h1v1H2zM3 3h1v1H3zM4 2h1v1H4zM2 4h1v1H2zM4 4h1v1H4z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -493,6 +496,36 @@
     font-family: var(--body);
   }
   footer .pixel { font-family: var(--pixel); }
+
+  /* === 폰 세로화면 비율 보정 === */
+  @media (max-width: 600px) {
+    :root {
+      --shadow: 4px 4px 0 var(--line);
+      --shadow-sm: 2px 2px 0 var(--line);
+      --shadow-lg: 6px 6px 0 var(--line);
+    }
+    body { padding: 14px 14px 56px; background-size: 18px 18px; }
+    header { padding: 18px 16px; gap: 14px; margin-bottom: 20px; }
+    .logo-wrap img { height: 52px; }
+    .titles h1 { font-size: 20px; }
+    .titles .sub { font-size: 15px; }
+    .tabs { gap: 10px; margin-bottom: 18px; }
+    .tab { padding: 14px 14px; font-size: 17px; grid-template-columns: 42px 1fr; gap: 12px; }
+    .tab-num { width: 42px; height: 42px; font-size: 22px; }
+    .card { padding: 18px; }
+    .make-grid, .detect-grid { gap: 20px; }
+    .step-head h3 { font-size: 19px; }
+    .result-card { padding: 18px; }
+    .result-id { font-size: 72px; padding: 16px 8px; }
+    .cam-controls { gap: 8px; margin-top: 16px; }
+    .btn-cam { font-size: 18px; padding: 13px 18px; }
+    .btn-cam-switch { font-size: 15px; padding: 12px 14px; }
+    footer { margin-top: 28px; }
+  }
+  @media (max-width: 380px) {
+    .tabs { grid-template-columns: 1fr; }
+    .result-id { font-size: 60px; }
+  }
 </style>
 </head>
 <body>
