@@ -320,6 +320,7 @@
     font-size: 16px;
   }
   .marker-svg-wrap {
+    width: min(360px, 100%);
     background: white;
     padding: 18px;
     border: 2px solid var(--ink);
@@ -327,8 +328,9 @@
   }
   .marker-svg-wrap svg {
     display: block;
-    width: 360px;
-    height: 360px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
   }
   .marker-empty {
     text-align: center;
@@ -518,6 +520,8 @@
     .id-input-row { flex-direction: column; }
     .id-input { font-size: 28px; }
     .btn-make { padding: 13px 22px; }
+    .marker-stage { padding: 20px; min-height: 0; }
+    .marker-svg-wrap { padding: 12px; }
     .result-card { padding: 18px; }
     .result-id { font-size: 72px; padding: 16px 8px; }
     .cam-controls { gap: 8px; margin-top: 16px; }
