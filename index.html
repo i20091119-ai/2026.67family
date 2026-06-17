@@ -2058,14 +2058,8 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
 
       btnCam.textContent = '⏹ 카메라 끄기';
       btnCam.disabled = false;
-      // 카메라가 2개 이상일 때만 전/후면 전환 버튼 노출
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const cams = devices.filter(d => d.kind === 'videoinput');
-        btnSwitch.hidden = cams.length < 2 && !isMobile;
-      } catch (_) {
-        btnSwitch.hidden = !isMobile;
-      }
+      // 카메라가 켜지면 전/후면 전환 버튼을 항상 노출
+      btnSwitch.hidden = false;
       resultStatusEl.textContent = '카드를 카메라에 비춰주세요';
       lastFrameTime = performance.now();
       tick();
